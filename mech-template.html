@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>机械设计公式速查手册</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230b6bcb'/%3E%3Ctext x='16' y='23' font-size='20' font-family='serif' text-anchor='middle' fill='white'%3E%CF%83%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f6f7f9; --panel:#ffffff; --ink:#1b1f24; --ink2:#5a6472; --line:#e3e7ec;
+  --acc:#0b6bcb; --acc-soft:#e8f1fb; --warn:#a8670a; --warn-soft:#fdf3e2;
+  --tbd:#8a4b00; --tbd-soft:#fff2dd; --ok:#0f7b52; --code:#eef1f5;
+  --shadow:0 1px 2px rgba(16,24,40,.06),0 4px 14px rgba(16,24,40,.05);
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+}
+html[data-theme="dark"]{
+  --bg:#12161b; --panel:#181d24; --ink:#e6ebf0; --ink2:#98a4b2; --line:#2a323c;
+  --acc:#5aa9f8; --acc-soft:#16283c; --warn:#e0a44a; --warn-soft:#2e2413;
+  --tbd:#e9b169; --tbd-soft:#2e2413; --ok:#4cc38a; --code:#1e242c;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  -webkit-text-size-adjust:100%;
+}
+a{color:var(--acc)}
+.wrap{max-width:1280px;margin:0 auto;padding:0 14px 60px}
+
+/* ---------- 顶栏 ---------- */
+.topbar{
+  position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:10px;
+  padding:10px 14px;background:color-mix(in srgb,var(--panel) 92%,transparent);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin:0 -14px 12px;
+}
+.brand{font-weight:700;font-size:16px;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand small{font-weight:500;color:var(--ink2);font-size:12px;margin-left:6px}
+.stats{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.stat{background:var(--acc-soft);color:var(--acc);border-radius:999px;padding:2px 9px;font-size:12px;white-space:nowrap}
+.iconbtn{
+  border:1px solid var(--line);background:var(--panel);color:var(--ink);
+  border-radius:8px;padding:5px 9px;font-size:13px;cursor:pointer;line-height:1.3;white-space:nowrap;
+}
+.iconbtn:hover{border-color:var(--acc);color:var(--acc)}
+#menuBtn{display:none}
+
+/* ---------- 工具条 ---------- */
+.toolbar{
+  display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:8px;margin-bottom:14px;box-shadow:var(--shadow);position:sticky;top:52px;z-index:30;
+}
+#q{
+  flex:1 1 240px;min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  border-radius:8px;padding:7px 10px;font-size:14px;font-family:inherit;
+}
+#q:focus{outline:2px solid var(--acc);outline-offset:-1px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{
+  border:1px solid var(--line);background:var(--panel);color:var(--ink2);
+  border-radius:999px;padding:4px 11px;font-size:12.5px;cursor:pointer;
+}
+.chip[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+.acts{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+
+/* ---------- 布局 ---------- */
+.layout{display:grid;grid-template-columns:262px minmax(0,1fr);gap:16px;align-items:start}
+#toc{
+  position:sticky;top:104px;max-height:calc(100vh - 120px);overflow:auto;
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px;box-shadow:var(--shadow);
+}
+#toc a{display:block;color:var(--ink2);text-decoration:none;border-radius:6px;padding:3px 7px;font-size:13px;line-height:1.45}
+#toc a:hover{background:var(--acc-soft);color:var(--acc)}
+#toc a.lv1{font-weight:700;color:var(--ink);margin-top:6px;font-size:13.5px}
+#toc a.lv2{padding-left:14px}
+#toc a.lv3{padding-left:26px;font-size:12.5px;font-variant-numeric:tabular-nums}
+#toc a.cur{background:var(--acc);color:#fff}
+#toc .cnt{color:var(--ink2);font-size:11px;font-weight:400}
+#toc a.cur .cnt{color:#fff}
+main{min-width:0}
+
+/* ---------- 篇 / 节 ---------- */
+.part{margin-bottom:26px}
+.part-h{
+  display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  border-left:4px solid var(--acc);padding:6px 0 6px 12px;margin:0 0 10px;
+}
+.part-h h2{margin:0;font-size:20px}
+.part-h .src{color:var(--ink2);font-size:12.5px}
+.sec{margin:0 0 18px}
+.sec-h{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  font-size:16px;font-weight:700;margin:0 0 10px;padding-bottom:5px;border-bottom:1px dashed var(--line);
+}
+.sec-h .n{color:var(--acc);font-variant-numeric:tabular-nums}
+.sec-h .c{font-weight:500;color:var(--ink2);font-size:12.5px}
+
+/* ---------- 公式卡 ---------- */
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:12px 14px;margin-bottom:10px;box-shadow:var(--shadow);overflow:hidden;
+}
+.card.hide{display:none}
+.card-h{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:2px}
+.fid{
+  font-family:var(--mono);font-size:11.5px;font-weight:700;color:var(--acc);
+  background:var(--acc-soft);border-radius:5px;padding:1px 6px;white-space:nowrap;
+}
+.fname{font-weight:650;font-size:15px}
+.badges{display:flex;gap:5px;flex-wrap:wrap;margin-left:auto}
+.badge{font-size:11px;border-radius:5px;padding:1px 6px;white-space:nowrap}
+.b-tbd{background:var(--tbd-soft);color:var(--tbd)}
+.b-typo{background:var(--warn-soft);color:var(--warn)}
+.b-diff{background:var(--acc-soft);color:var(--acc)}
+.b-src{background:var(--code);color:var(--ink2);font-weight:500}
+.desc{color:var(--ink2);font-size:13px;margin:3px 0 6px}
+.desc p{margin:2px 0}
+
+/* 公式显示 */
+.fx{
+  background:var(--bg);border:1px solid var(--line);border-radius:8px;
+  padding:12px 10px;margin:6px 0;overflow-x:auto;text-align:center;
+}
+.fx .math{font-size:1.12em}
+.fx .math + .math{margin-left:.7em}
+.fx + .fx{margin-top:-6px}
+
+/* 表格 */
+.tw{overflow-x:auto;margin:8px 0;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{border-bottom:1px solid var(--line);padding:5px 9px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:650;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td:first-child{white-space:nowrap}
+.tw table{min-width:min(100%,420px)}
+
+/* 列表 / 条件 / 注 */
+.conds{margin:6px 0 0;padding:0;list-style:none}
+.conds li{position:relative;padding-left:16px;font-size:13px;margin:2px 0}
+.conds li:before{content:"›";position:absolute;left:3px;color:var(--acc);font-weight:700}
+.kv{margin:6px 0 0;padding:0;list-style:none;font-size:13px}
+.kv li{margin:2px 0;padding-left:14px;position:relative}
+.kv li:before{content:"·";position:absolute;left:2px;color:var(--ink2)}
+.kv b{color:var(--ink)}
+.note{
+  margin:7px 0 0;padding:7px 10px;border-left:3px solid var(--warn);
+  background:var(--warn-soft);border-radius:0 6px 6px 0;font-size:12.5px;color:var(--ink);
+}
+.note .lb{font-weight:700;color:var(--warn);margin-right:4px}
+.plain{margin:6px 0 0;font-size:13.5px}
+.plain p{margin:3px 0}
+
+/* 差异面板 */
+.diffs{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:22px;box-shadow:var(--shadow)}
+.diffs h2{margin:0 0 4px;font-size:18px}
+.diffs .hint{color:var(--ink2);font-size:12.5px;margin:0 0 10px}
+.dg{margin:12px 0 0}
+.dg h3{font-size:14px;margin:0 0 6px;color:var(--acc)}
+
+/* 页脚 */
+footer{margin-top:30px;padding-top:14px;border-top:1px solid var(--line);color:var(--ink2);font-size:12.5px}
+footer h3{font-size:14px;color:var(--ink);margin:0 0 6px}
+footer ol{margin:4px 0 0;padding-left:22px}
+footer li{margin:2px 0}
+.empty{padding:30px;text-align:center;color:var(--ink2)}
+
+/* ---------- 数学渲染 ---------- */
+.math{white-space:nowrap;font-family:"Cambria Math","Latin Modern Math",Cambria,Georgia,"Times New Roman",serif}
+.ms{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.15}
+.ms>span{display:block}
+.msub{font-size:.72em}
+.msup{font-size:.72em}
+.mfrac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.2;margin:0 .18em}
+.mfrac .mnum{border-bottom:1.1px solid currentColor;padding:0 .3em}
+.mfrac .mden{padding:0 .3em}
+.msqrt{display:inline-flex;align-items:stretch;vertical-align:middle;margin:0 .1em}
+.msqrt .mradic{border-top:1.1px solid currentColor;padding:0 .25em;margin-top:.12em}
+.msqrt .mroot{font-size:.7em;transform:translateY(.18em);padding-right:.08em}
+.mover{display:inline-block;border-top:1.1px solid currentColor;padding-top:.05em}
+.mtext{font-family:inherit}
+.mf{font-family:inherit;padding-right:.06em}
+.mg{}
+.mtable{display:inline-flex;flex-direction:column;vertical-align:middle;line-height:1.35}
+.mtable .mrow{display:flex}
+.mtable .mtd{flex:1 1 0;padding:0 .45em;text-align:center}
+.mcases{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:left;line-height:1.5}
+.mcases .mrow{display:flex;align-items:center}
+.mcases .mbrace{font-size:1.5em;line-height:1;padding-right:.15em;color:var(--ink2)}
+.mcases .mbody{display:flex;flex-direction:column}
+.mbig{font-size:1.35em;line-height:1;display:inline-block;vertical-align:middle;padding:0 .08em}
+.msp{display:inline-block;width:.5em}
+.msp-wide{width:1.4em}
+.mo{font-style:normal}
+.munk{color:#c0392b;font-family:var(--mono);font-size:.9em}
+.tbd{background:var(--tbd-soft);color:var(--tbd);border-radius:4px;padding:0 3px;font-size:.92em;white-space:nowrap}
+code.cm{font-family:inherit;background:none;padding:0;color:inherit;font-size:1em}
+code.cd{font-family:var(--mono);font-size:.88em;background:var(--code);border-radius:4px;padding:1px 4px}
+
+/* ---------- 响应式 ---------- */
+@media (max-width:900px){
+  #menuBtn{display:inline-block}
+  .layout{grid-template-columns:1fr}
+  #toc{
+    position:fixed;left:0;top:0;bottom:0;width:78%;max-width:300px;max-height:none;
+    border-radius:0;z-index:60;transform:translateX(-102%);transition:transform .22s ease;
+    padding-top:14px;
+  }
+  #toc.open{transform:none;box-shadow:0 0 0 100vmax rgba(0,0,0,.45)}
+  .stats .stat:nth-child(n+4){display:none}
+  .toolbar{top:52px}
+}
+@media (max-width:560px){
+  .wrap{padding:0 10px 50px}
+  .topbar{margin:0 -10px 10px;padding:8px 10px}
+  .brand{font-size:14.5px}
+  .brand small{display:none}
+  .card{padding:10px 11px}
+  .fx{padding:10px 6px}
+  .fx .math{font-size:1.05em}
+  .fname{font-size:14px}
+}
+@media print{
+  .topbar,.toolbar,#toc,#menuBtn{display:none!important}
+  body{background:#fff;color:#000;font-size:11pt}
+  .wrap{max-width:none;padding:0}
+  .layout{display:block}
+  .card,.diffs{box-shadow:none;border:1px solid #bbb;break-inside:avoid;page-break-inside:avoid}
+  .sec-h,.part-h{break-after:avoid}
+  .fx{background:#fff}
+  a{color:#000;text-decoration:none}
+}
+
+/* ---------- 卡片计算器 ---------- */
+.calc{border:1px dashed var(--acc);border-radius:8px;background:var(--acc-soft);padding:8px 10px;margin-top:8px;font-size:13px}
+.calc .ct{font-weight:600;color:var(--acc);margin-bottom:6px}
+.calc .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px}
+.calc label{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;color:var(--ink2)}
+.calc input{width:90px;border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:13px;background:var(--panel);color:var(--ink)}
+.calc button{border:1px solid var(--acc);background:var(--acc);color:#fff;border-radius:6px;padding:4px 12px;font-size:13px;cursor:pointer}
+.calc button:hover{filter:brightness(1.1)}
+.calc .res{margin-top:4px;font-family:var(--mono);color:var(--ink);background:var(--panel);border-radius:6px;padding:6px 8px;display:none;white-space:pre-wrap}
+.calc .res.show{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <button class="iconbtn" id="menuBtn" aria-label="目录">☰</button>
+    <div class="brand">机械设计公式速查手册<small>濮良贵《机械设计》第9版 · 公式逐字照录 · 多源交叉核对</small></div>
+    <div class="stats" id="stats"></div>
+    <button class="iconbtn" id="themeBtn" title="切换深浅色">◐</button>
+  </header>
+
+  <div class="toolbar">
+    <input id="q" type="search" placeholder="搜索公式编号（如 F3-63）、名称、符号（如 σ_H、d_1）…" autocomplete="off">
+    <div class="chips" id="chips"></div>
+    <div class="acts">
+      <button class="iconbtn" id="diffBtn" aria-pressed="false">仅看差异/存疑</button>
+      <button class="iconbtn" id="openAllBtn">全部展开</button>
+      <button class="iconbtn" id="printBtn">打印 / 存 PDF</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside id="toc" aria-label="目录"></aside>
+    <main id="content"></main>
+  </div>
+</div>
+
+<script>
+const DATA = /*__DATA__*/;
+
+/* ============================================================ LaTeX 渲染器 */
+(function(){
+const GREEK={alpha:'α',beta:'β',gamma:'γ',delta:'δ',epsilon:'ε',varepsilon:'ε',zeta:'ζ',eta:'η',theta:'θ',vartheta:'ϑ',iota:'ι',kappa:'κ',lambda:'λ',mu:'μ',nu:'ν',xi:'ξ',pi:'π',varpi:'ϖ',rho:'ρ',varrho:'ϱ',sigma:'σ',varsigma:'ς',tau:'τ',upsilon:'υ',phi:'φ',varphi:'ϕ',chi:'χ',psi:'ψ',omega:'ω',Gamma:'Γ',Delta:'Δ',Theta:'Θ',Lambda:'Λ',Xi:'Ξ',Pi:'Π',Sigma:'Σ',Upsilon:'Υ',Phi:'Φ',Psi:'Ψ',Omega:'Ω'};
+const OPS={times:'×',cdot:'·',div:'÷',pm:'±',mp:'∓',leq:'≤',le:'≤',geq:'≥',ge:'≥',neq:'≠',ne:'≠',approx:'≈',equiv:'≡',sim:'∼',simeq:'≃',propto:'∝',infty:'∞',partial:'∂',nabla:'∇',prime:'′',dots:'…',ldots:'…',cdots:'…',to:'→',rightarrow:'→',leftarrow:'←',Rightarrow:'⇒',mapsto:'↦',angle:'∠',perp:'⊥',parallel:'∥',cup:'∪',cap:'∩',subset:'⊂',subseteq:'⊆',in:'∈',forall:'∀',exists:'∃',emptyset:'∅',deg:'°',circ:'∘',ast:'∗',star:'⋆','%':'%','&':'&','#':'#','_':'_','$':'$','{':'{','}':'}'};
+const FUNCS={sin:'sin',cos:'cos',tan:'tan',cot:'cot',sec:'sec',csc:'csc',arcsin:'arcsin',arccos:'arccos',arctan:'arctan',sinh:'sinh',cosh:'cosh',tanh:'tanh',log:'log',ln:'ln',lg:'lg',exp:'exp',min:'min',max:'max',lim:'lim',limsup:'lim sup',liminf:'lim inf',gcd:'gcd',det:'det',arg:'arg',mod:'mod',Pr:'Pr'};
+const BIGOPS={sum:'∑',prod:'∏',int:'∫',iint:'∬',iiint:'∭',oint:'∮',bigcup:'⋃',bigcap:'⋂',coprod:'∐'};
+const ENVS=['array','matrix','pmatrix','bmatrix','Bmatrix','vmatrix','cases','aligned','align','split','smallmatrix','dcases','rcases'];
+
+function tokenize(s){
+  const t=[];let i=0;
+  while(i<s.length){
+    const c=s[i];
+    if(c==='\\'){
+      const n=s[i+1];
+      if(n===undefined){t.push({t:'c',v:'\\'});i++;continue;}
+      if(/[a-zA-Z]/.test(n)){
+        let j=i+1;while(j<s.length&&/[a-zA-Z]/.test(s[j]))j++;
+        t.push({t:'k',v:s.slice(i+1,j)});i=j;continue;
+      }
+      if(n==='\\'){t.push({t:'nl'});i+=2;continue;}
+      t.push({t:'c',v:n});i+=2;continue;
+    }
+    if(c==='{'){t.push({t:'{'});i++;continue;}
+    if(c==='}'){t.push({t:'}'});i++;continue;}
+    if(c==='^'){t.push({t:'^'});i++;continue;}
+    if(c==='_'){t.push({t:'_'});i++;continue;}
+    if(c==='&'){t.push({t:'&'});i++;continue;}
+    if(/\s/.test(c)){if(t.length&&t[t.length-1].t==='s')t[t.length-1].v+=' ';else t.push({t:'s',v:' '});i++;continue;}
+    t.push({t:'c',v:c});i++;
+  }
+  return t;
+}
+
+function renderLatex(src){
+  if(src==null)return '';
+  const T=tokenize(src);let p=0;
+  const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  function atom(){
+    while(p<T.length&&T[p].t==='s')p++;
+    const t=T[p];
+    if(!t)return '';
+    if(t.t==='{'){p++;const inner=seq(true);if(T[p]&&T[p].t==='}')p++;return inner;}
+    if(t.t==='k')return cmd();
+    if(t.t==='c'){p++;return esc(t.v);}
+    if(t.t==='s'){p++;return ' ';}
+    if(t.t==='^'||t.t==='_'){p++;return atom();}
+    p++;return '';
+  }
+  function scripts(inner){
+    let sup='',sub='',has=false;
+    while(p<T.length&&(T[p].t==='^'||T[p].t==='_')){
+      const kind=T[p].t;p++;
+      const a=atom();
+      if(kind==='^')sup+=a;else sub+=a;
+      has=true;
+    }
+    if(!has)return inner;
+    if(sup.trim()==='<span class="mo">∘</span>')sup='°';
+    return '<span class="ms">'+inner+(sub?'<span class="msub">'+sub+'</span>':'')+(sup?'<span class="msup">'+sup+'</span>':'')+'</span>';
+  }
+  function cmd(){
+    const t=T[p];const n=t.v;p++;
+    if(Object.prototype.hasOwnProperty.call(GREEK,n))return '<span class="mg">'+GREEK[n]+'</span>';
+    if(Object.prototype.hasOwnProperty.call(OPS,n))return '<span class="mo">'+OPS[n]+'</span>';
+    if(Object.prototype.hasOwnProperty.call(FUNCS,n))return '<span class="mf">'+FUNCS[n]+'</span>';
+    if(Object.prototype.hasOwnProperty.call(BIGOPS,n))return '<span class="mbig">'+BIGOPS[n]+'</span>';
+    switch(n){
+      case 'frac':case 'dfrac':case 'tfrac':case 'cfrac':{
+        const a=atom(),b=atom();
+        return '<span class="mfrac"><span class="mnum">'+a+'</span><span class="mden">'+b+'</span></span>';
+      }
+      case 'sqrt':{
+        let idx='';
+        while(p<T.length&&T[p].t==='s')p++;
+        if(T[p]&&T[p].t==='c'&&T[p].v==='['){
+          p++;let d=1,buf='';
+          while(p<T.length&&d>0){
+            if(T[p].t==='c'&&T[p].v==='[')d++;
+            if(T[p].t==='c'&&T[p].v===']'){d--;if(d===0){p++;break;}}
+            if(T[p].t==='c')buf+=T[p].v;else if(T[p].t==='k')buf+='\\'+T[p].v;else if(T[p].t==='{')buf+='{';else if(T[p].t==='}')buf+='}';
+            p++;
+          }
+          idx=buf;
+        }
+        const a=atom();
+        return '<span class="msqrt">'+(idx?'<span class="mroot">'+renderLatex(idx)+'</span>':'')+'<span class="mradic">'+a+'</span></span>';
+      }
+      case 'text':case 'mbox':case 'textrm':case 'textnormal':case 'mathrm':case 'mathit':case 'mathbf':case 'operatorname':{
+        const a=atom();return '<span class="mtext">'+a+'</span>';
+      }
+      case 'overline':case 'underline':{
+        const a=atom();
+        return '<span class="mover">'+a+'</span>';
+      }
+      case 'overbrace':case 'underbrace':{const a=atom();return a;}
+      case 'left':case 'right':case 'big':case 'Big':case 'bigg':case 'Bigg':case 'bigl':case 'bigr':case 'bigm':case 'Bigl':case 'Bigr':case 'Bigm':{
+        while(p<T.length&&T[p].t==='s')p++;
+        if(T[p]&&(T[p].t==='c'||T[p].t==='k'))p++;
+        return '';
+      }
+      case 'quad':return '<span class="msp"></span>';
+      case 'qquad':return '<span class="msp msp-wide"></span>';
+      case 'displaystyle':case 'textstyle':case 'limits':case 'nolimits':case 'relax':case 'allowbreak':return '';
+      case ',':case ';':case '!':case ' ':return '<span class="msp"></span>';
+      case 'begin':{
+        const env=atom();
+        if(ENVS.indexOf(env)>=0){
+          if(T[p]&&T[p].t==='{'){let d=0;while(p<T.length){if(T[p].t==='{')d++;if(T[p].t==='}'){d--;if(d===0){p++;break;}}p++;}}
+          let curCell='',curRow=[],rows=[];
+          while(p<T.length){
+            while(p<T.length&&T[p].t==='s')p++;
+            if(p>=T.length)break;
+            const q=T[p];
+            if(q.t==='k'&&q.v==='end'){
+              p++;curRow.push(curCell);rows.push(curRow);
+              if(T[p]&&T[p].t==='{'){let d=0;while(p<T.length){if(T[p].t==='{')d++;if(T[p].t==='}'){d--;if(d===0){p++;break;}}p++;}}
+              break;
+            }
+            if(q.t==='&'){p++;curRow.push(curCell);curCell='';continue;}
+            if(q.t==='nl'){p++;curRow.push(curCell);rows.push(curRow);curCell='';curRow=[];continue;}
+            curCell+=atom();
+          }
+          rows=rows.filter(r=>r.length&&r.some(c=>c!==''));
+          if(!rows.length)return '';
+          if(env==='cases'||env==='dcases'||env==='rcases'){
+            return '<span class="mcases"><span class="mbrace">{</span><span class="mbody">'+
+              rows.map(function(r){return '<span class="mrow">'+r.map(function(c){return '<span class="mtd">'+c+'</span>';}).join('')+'</span>';}).join('')+
+              '</span></span>';
+          }
+          return '<span class="mtable">'+rows.map(r=>'<span class="mrow">'+r.map(c=>'<span class="mtd">'+c+'</span>').join('')+'</span>').join('')+'</span>';
+        }
+        return '';
+      }
+      case 'end':{
+        if(T[p]&&T[p].t==='{'){let d=0;while(p<T.length){if(T[p].t==='{')d++;if(T[p].t==='}'){d--;if(d===0){p++;break;}}p++;}}
+        return '';
+      }
+      case 'prime':return '<span class="mo">′</span>';
+      case 'not':return '<span class="mo"≯</span>';
+      default:return '<span class="munk" title="\\'+n+'">\\'+n+'</span>';
+    }
+  }
+  function seq(inGroup){
+    let out='';
+    while(p<T.length){
+      const t=T[p];
+      if(inGroup&&t.t==='}')break;
+      if(!inGroup&&t.t==='}'){p++;continue;}
+      if(t.t==='&'||t.t==='nl'){p++;out+=' ';continue;}
+      const start=p;
+      let inner=atom();
+      if(p===start)inner='';
+      inner=scripts(inner);
+      out+=inner;
+    }
+    return out;
+  }
+  try{return seq(false);}catch(e){return '<span class="munk">'+esc(src)+'</span>';}
+}
+window.renderLatex=renderLatex;
+window.__GREEK=GREEK;window.__OPS=OPS;window.__FUNCS=FUNCS;window.__BIGOPS=BIGOPS;window.__ENVS=ENVS;
+})();
+
+/* ============================================================ 工具 */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function mdInline(s){
+  let out='',i=0;const n=s.length;
+  while(i<n){
+    const c=s[i];
+    if(c==='`'){
+      const j=s.indexOf('`',i+1);
+      if(j>i){const code=s.slice(i+1,j);out+='<code class="'+((/\\|_|\^/.test(code))?'cm':'cd')+'">'+esc(code)+'</code>';i=j+1;continue;}
+    }
+    if(s.substr(i,2)==='**'){
+      const j=s.indexOf('**',i+2);
+      if(j>i){out+='<strong>'+mdInline(s.slice(i+2,j))+'</strong>';i=j+2;continue;}
+    }
+    if(c==='['&&s.substr(i,3)==='[待'){
+      const j=s.indexOf(']',i);
+      if(j>i){out+='<span class="tbd">'+esc(s.slice(i,j+1))+'</span>';i=j+1;continue;}
+    }
+    if(c==='['){
+      const j=s.indexOf(']',i);
+      if(j>i&&s[j+1]==='('){const k=s.indexOf(')',j);if(k>j){out+='<a href="'+esc(s.slice(j+2,k))+'" target="_blank" rel="noopener">'+mdInline(s.slice(i+1,j))+'</a>';i=k+1;continue;}}
+    }
+    out+=esc(c);i++;
+  }
+  return out;
+}
+/* 把 HTML 片段里的 $...$ 与 code.cm 变成渲染后的数学 */
+function mathify(root){
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:function(nd){return nd.nodeValue.indexOf('$')>=0?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;}});
+  const list=[];while(w.nextNode())list.push(w.currentNode);
+  list.forEach(function(node){
+    const txt=node.nodeValue;const parts=[];let last=0,i=0,hit=false;
+    while(i<txt.length){
+      if(txt[i]==='$'&&txt[i-1]!=='\\'){
+        let j=i+1;while(j<txt.length&&txt[j]!=='$')j++;
+        if(j<txt.length){parts.push({m:0,v:txt.slice(last,i)});parts.push({m:1,v:txt.slice(i+1,j)});last=j+1;i=j+1;hit=true;continue;}
+      }
+      i++;
+    }
+    if(!hit)return;
+    parts.push({m:0,v:txt.slice(last)});
+    const frag=document.createDocumentFragment();
+    parts.forEach(function(p){
+      if(p.m){const sp=document.createElement('span');sp.className='math';sp.innerHTML=renderLatex(p.v);frag.appendChild(sp);}
+      else frag.appendChild(document.createTextNode(p.v));
+    });
+    node.parentNode.replaceChild(frag,node);
+  });
+  root.querySelectorAll('code.cm').forEach(function(el){
+    const sp=document.createElement('span');sp.className='math';sp.innerHTML=renderLatex(el.textContent);
+    el.parentNode.replaceChild(sp,el);
+  });
+}
+
+/* ============================================================ 渲染 */
+function tableHTML(t){
+  let h='<div class="tw"><table>';
+  if(t.head&&t.head.some(function(c){return c&&c.trim();})){
+    h+='<thead><tr>'+t.head.map(function(c){return '<th>'+mdInline(c||'')+'</th>';}).join('')+'</tr></thead>';
+  }
+  h+='<tbody>'+t.rows.map(function(r){
+    return '<tr>'+r.map(function(c){return '<td>'+mdInline(c||'')+'</td>';}).join('')+'</tr>';
+  }).join('')+'</tbody></table></div>';
+  return h;
+}
+
+/* 把 LaTeX 片段转成可搜索的纯文本：\sigma_H -> σH，d_1 -> d1 */
+function latexToPlain(s){
+  if(s==null)return '';
+  let out;
+  if(typeof s==='object'){try{out=JSON.stringify(s);}catch(e){out='';}}
+  else out=String(s);
+  out=out.replace(/\$/g,'');
+  out=out.replace(/\\([a-zA-Z]+)/g,function(m,n){
+    if(window.__GREEK&&window.__GREEK[n])return window.__GREEK[n];
+    if(window.__OPS&&window.__OPS[n])return window.__OPS[n];
+    if(window.__FUNCS&&window.__FUNCS[n])return window.__FUNCS[n];
+    return '';
+  });
+  out=out.replace(/[{}]/g,'').replace(/_/g,'').replace(/\^/g,'');
+  return out;
+}
+function cardHTML(card){
+  const b=card.body;
+  const hasF=b.f&&b.f.length;
+  const typo=(b.n||[]).some(function(x){return /原文如此/.test(x);});
+  const tbd=JSON.stringify(b).indexOf('[待核对]')>=0;
+  const diff=/差异/.test(JSON.stringify(b))||(b.s||[]).length>1;
+  const searchRaw=(card.id+' '+card.t+' '+(b.d||[]).join(' ')+' '+(b.c||[]).join(' ')+' '+(b.s||[]).join(' ')+' '+JSON.stringify(b.t||[])+' '+JSON.stringify(b.l||[]));
+  const searchPlain=(card.id+' '+card.t+' '+(b.t||[]).map(latexToPlain).join(' ')+' '+(b.l||[]).map(latexToPlain).join(' ')+' '+(b.d||[]).map(latexToPlain).join(' ')+' '+(b.c||[]).join(' '));
+  let h='<article class="card" data-id="'+esc(card.id)+'" data-search="'+esc((searchRaw+' '+searchPlain).toLowerCase().replace(/"/g,''))+'" data-flag="'+(typo?'1':'0')+(tbd?'1':'0')+(diff?'1':'0')+'">';
+  h+='<div class="card-h">';
+  if(card.id)h+='<span class="fid">'+esc(card.id)+'</span>';
+  h+='<span class="fname">'+esc(card.t||'')+'</span>';
+  h+='<span class="badges">';
+  if(tbd)h+='<span class="badge b-tbd">待核对</span>';
+  if(typo)h+='<span class="badge b-typo">原文如此·疑笔误</span>';
+  if(diff)h+='<span class="badge b-diff">多源差异</span>';
+  (b.s||[]).forEach(function(s){
+    String(s).split(/\][ ]*\[/).map(function(x){
+      return x.replace(/^\[/,'').replace(/\]$/,'').replace(/^来源[:：]\s*/,'').trim();
+    }).filter(function(x){return x;}).forEach(function(x){
+      h+='<span class="badge b-src">'+esc(x)+'</span>';
+    });
+  });
+  h+='</span></div>';
+  (b.d||[]).forEach(function(d){h+='<div class="desc">'+mdInline(d)+'</div>';});
+  if(hasF){
+    h+='<div class="fx">'+b.f.map(function(f){return '<span class="math">'+renderLatex(f)+'</span>';}).join('')+'</div>';
+  }
+  (b.t||[]).forEach(function(t){h+=tableHTML(t);});
+  if((b.c||[]).length){h+='<ul class="conds">'+b.c.map(function(c){return '<li>'+mdInline(c)+'</li>';}).join('')+'</ul>';}
+  if((b.l||[]).length){
+    h+='<ul class="kv">'+b.l.map(function(it){
+      return '<li>'+(it.k?'<b>'+mdInline(it.k)+'：</b>':'')+mdInline(it.v)+'</li>';
+    }).join('')+'</ul>';
+  }
+  (b.n||[]).forEach(function(x){h+='<div class="note"><span class="lb">注</span>'+mdInline(x)+'</div>';});
+  h+=calcHTML(card);
+  h+='</article>';
+  return h;
+}
+
+const TOC=[];
+
+/* ---------------- 卡片计算器 ---------------- */
+/* 按 F-id 给高频公式挂计算面板。calc 收对象返回 {r:主结果, extra?:补充行}。 */
+const CALCS={
+  'F1-01':{t:'应力 σ = F/A',i:[{k:'F',l:'F (N)'},{k:'A',l:'A (mm²)'}],c:v=>({r:(v.F/v.A).toFixed(2)+' MPa'})},
+  'F1-02':{t:'应变 ε = Δl/l',i:[{k:'dl',l:'Δl (mm)'},{k:'l',l:'l (mm)'}],c:v=>({r:(v.dl/v.l).toExponential(3)})},
+  'F4-10':{t:'基本额定寿命 L = (C/P)^ε',i:[{k:'C',l:'C (N)'},{k:'P',l:'P (N)'},{k:'e',l:'ε (球=3,滚子=10/3)'}],c:v=>({r:Math.pow(v.C/v.P,v.e).toExponential(4)+' r'})},
+  'F4-11':{t:'寿命小时数 L_h = 10⁶/(60n)·(C/P)^ε',i:[{k:'C',l:'C (N)'},{k:'P',l:'P (N)'},{k:'e',l:'ε'},{k:'n',l:'n (r/min)'}],c:v=>({r:(1e6/(60*v.n)*Math.pow(v.C/v.P,v.e)).toFixed(0)+' h'})},
+  'F4-13':{t:'当量动载荷 P = X·F_r + Y·F_a',i:[{k:'X',l:'X'},{k:'Fr',l:'F_r (N)'},{k:'Y',l:'Y'},{k:'Fa',l:'F_a (N)'}],c:v=>({r:(v.X*v.Fr+v.Y*v.Fa).toFixed(1)+' N'})},
+  'F4-24':{t:'计算转矩 T_ca = K·T',i:[{k:'K',l:'K 工况系数'},{k:'T',l:'T (N·m)'}],c:v=>({r:(v.K*v.T).toFixed(1)+' N·m'})},
+  'F4-31':{t:'轴径 d ≥ ∛(9550000·P/(0.2·[τ_T]·n))',i:[{k:'P',l:'P (kW)'},{k:'n',l:'n (r/min)'},{k:'t',l:'[τ_T] (MPa)'}],c:v=>({r:'d ≥ '+Math.cbrt(9550000*v.P/(0.2*v.t*v.n)).toFixed(1)+' mm'})},
+  'F4-38':{t:'轴径 d ≥ ∛(9550·P/(0.2·[τ_T]·n))',i:[{k:'P',l:'P (kW)'},{k:'n',l:'n (r/min)'},{k:'t',l:'[τ_T] (MPa)'}],c:v=>({r:'d ≥ '+Math.cbrt(9550*v.P/(0.2*v.t*v.n)).toFixed(1)+' mm'})},
+  'F3-04':{t:'有效拉力 F_e = 1000P/v',i:[{k:'P',l:'P (kW)'},{k:'v',l:'v (m/s)'}],c:v=>({r:(1000*v.P/v.v).toFixed(1)+' N'})},
+  'F3-07':{t:'小带轮包角 α₁',i:[{k:'dd',l:'d_d2 (mm)'},{k:'d1',l:'d_d1 (mm)'},{k:'a',l:'a (mm)'}],c:v=>{var deg=180-57.3*(v.dd-v.d1)/v.a;return{r:deg.toFixed(1)+'°',extra:(deg>=120?'✓ ≥120° 满足':(deg>=90?'⚠ 90~120° 偏小':'✗ <90° 过小'))}}},
+  'F3-17':{t:'平均传动比 i = n₁/n₂',i:[{k:'n1',l:'n₁ (r/min)'},{k:'n2',l:'n₂ (r/min)'}],c:v=>({r:(v.n1/v.n2).toFixed(3)})},
+  'F3-35':{t:'链速 v = z·p·n/(60×1000)',i:[{k:'z',l:'z 齿数'},{k:'p',l:'p 节距 (mm)'},{k:'n',l:'n (r/min)'}],c:v=>({r:(v.z*v.p*v.n/60000).toFixed(2)+' m/s'})},
+  'F3-63':{t:'齿根弯曲 σ_F = (2K·T₁·Y_F·Y_S·Y_ε)/(b·m²·z₁)',i:[{k:'K',l:'K'},{k:'T',l:'T₁ (N·mm)'},{k:'YF',l:'Y_F'},{k:'YS',l:'Y_S'},{k:'Ye',l:'Y_ε'},{k:'b',l:'b (mm)'},{k:'m',l:'m (mm)'},{k:'z',l:'z₁'}],c:v=>({r:(2*v.K*v.T*v.YF*v.YS*v.Ye/(v.b*v.m*v.m*v.z)).toFixed(2)+' MPa'})},
+  'F3-66':{t:'齿面接触 σ_H = Z_E·Z_H·Z_ε·√(2K·T₁·(u±1)/(b·d₁²·u))',i:[{k:'ZE',l:'Z_E'},{k:'ZH',l:'Z_H'},{k:'Ze',l:'Z_ε'},{k:'K',l:'K'},{k:'T',l:'T₁ (N·mm)'},{k:'u',l:'u 齿数比'},{k:'b',l:'b (mm)'},{k:'d1',l:'d₁ (mm)'}],c:v=>({r:(v.ZE*v.ZH*v.Ze*Math.sqrt(2*v.K*v.T*(v.u+1)/(v.b*v.d1*v.d1*v.u))).toFixed(1)+' MPa'})},
+  'F2-01':{t:'紧螺栓总拉力 F₂ = F₀ + F·C_b/(C_b+C_m)',i:[{k:'F0',l:'F₀ (N)'},{k:'F',l:'F 工作载荷 (N)'},{k:'Cb',l:'C_b'},{k:'Cm',l:'C_m'}],c:v=>({r:(v.F0+v.F*v.Cb/(v.Cb+v.Cm)).toFixed(1)+' N'})},
+  'F2-03':{t:'残余预紧力校核 F₁ = F₀ − F·C_m/(C_b+C_m)',i:[{k:'F0',l:'F₀ (N)'},{k:'F',l:'F (N)'},{k:'Cb',l:'C_b'},{k:'Cm',l:'C_m'}],c:v=>({r:(v.F0-v.F*v.Cm/(v.Cb+v.Cm)).toFixed(1)+' N'})},
+  'F2-20':{t:'相对刚度 C_b/(C_b+C_m)',i:[{k:'Cb',l:'C_b'},{k:'Cm',l:'C_m'}],c:v=>({r:(v.Cb/(v.Cb+v.Cm)).toFixed(3)})},
+  'F2-34':{t:'键挤压 σ_bs = 2000T/(k·l·d)',i:[{k:'T',l:'T (N·m)'},{k:'k',l:'k (mm)'},{k:'l',l:'l (mm)'},{k:'d',l:'d (mm)'}],c:v=>({r:(2000*v.T/(v.k*v.l*v.d)).toFixed(2)+' MPa'})},
+  'F1-09':{t:'圆截面抗扭 τ = T/W_T, W_T≈0.2d³',i:[{k:'T',l:'T (N·mm)'},{k:'d',l:'d (mm)'}],c:v=>({r:(v.T/(0.2*Math.pow(v.d,3))).toFixed(2)+' MPa'})},
+};
+function calcHTML(card){
+  const c=CALCS[card.id];
+  if(!c)return'';
+  const id='calc-'+card.id;
+  let h='<div class="calc" id="'+id+'"><div class="ct">⚙ 计算 · '+esc(c.t)+'</div><div class="row">';
+  c.i.forEach(function(f){h+='<label>'+esc(f.l)+' <input type="number" step="any" data-k="'+f.k+'"></label>';});
+  h+='<button type="button">计算</button></div><div class="res"></div></div>';
+  return h;
+}
+function bindCalcs(root){
+  root.querySelectorAll('.calc').forEach(function(box){
+    const cardId=box.id.slice(5);
+    const c=CALCS[cardId];
+    const res=box.querySelector('.res');
+    box.querySelector('button').addEventListener('click',function(){
+      const v={};
+      let ok=true;
+      box.querySelectorAll('input').forEach(function(inp){
+        const val=parseFloat(inp.value);
+        if(isNaN(val)){ok=false;inp.style.borderColor='var(--warn)';}else{inp.style.borderColor='';v[inp.dataset.k]=val;}
+      });
+      if(!ok){res.textContent='请填写所有输入（数值）';res.className='res show';return;}
+      try{
+        const r=c.c(v);
+        res.textContent='结果：'+r.r+(r.extra?'\n'+r.extra:'');
+        res.className='res show';
+      }catch(e){res.textContent='计算出错：'+e.message;res.className='res show';}
+    });
+  });
+}
+function render(){
+  const stats=DATA.stats;
+  document.getElementById('stats').innerHTML=
+    '<span class="stat">'+stats.formulas+' 条公式</span>'+
+    '<span class="stat">'+stats.sections+' 节</span>'+
+    '<span class="stat">'+stats.parts+' 篇</span>'+
+    '<span class="stat">'+DATA.diffs.length+' 组交叉差异</span>';
+
+  let html='',toc='';
+  /* 差异面板 */
+  if(DATA.diffs.length){
+    html+='<section class="diffs" id="diffs"><h2>交叉核对差异速查</h2>'+
+      '<p class="hint">同一公式在不同来源写法不一致时，正文条目中已并列保留两种写法；下表汇总备查。标「待核对」者表示来源未能定案，请以教材或现行国标为准。</p>';
+    DATA.diffs.forEach(function(d){
+      html+='<div class="dg"><h3>'+esc(d.g)+'</h3>'+tableHTML({head:d.head,rows:d.rows})+'</div>';
+    });
+    html+='</section>';
+  }
+
+  DATA.parts.forEach(function(p,pi){
+    const anchor='p'+pi;
+    html+='<section class="part" id="'+anchor+'"><div class="part-h"><h2>'+esc(p.title)+'</h2>'+
+      (p.src?'<span class="src">'+esc(p.src)+'</span>':'')+'</div>';
+    toc+='<a class="lv1" href="#'+anchor+'">'+esc(p.title.replace(/^#\s*/,''))+'</a>';
+    p.sections.forEach(function(s,si){
+      const sa=anchor+'-'+si;
+      const nf=s.cards.filter(function(c){return c.body.f&&c.body.f.length;}).length;
+      html+='<section class="sec" id="'+sa+'"><div class="sec-h"><span class="n">'+esc(s.id)+'</span>'+
+        (nf?'<span class="c">'+nf+' 条</span>':'')+'</div>';
+      toc+='<a class="lv2" href="#'+sa+'">'+esc(s.id)+' <span class="cnt">'+nf+'</span></a>';
+      s.cards.forEach(function(c,ci){
+        html+=cardHTML(c);
+        toc+='<a class="lv3" href="#'+sa+'-c'+ci+'" data-t="'+esc(sa+' '+c.id+' '+c.t)+'">'+esc(c.id||('#'+(ci+1)))+' '+(c.t?esc(c.t):'')+'</a>';
+      });
+      html+='</section>';
+    });
+    html+='</section>';
+  });
+
+  html+='<footer id="sources"><h3>公式来源与核对说明</h3>'+
+    '<p>本手册公式按来源文件<strong>逐字照录</strong>，未修正符号、系数、指数、上下标、括号、正负号与运算顺序；方括号 <code class="cd">[ ]</code> 表示许用值。原文已注明的笔误一律照录并标注「原文如此·疑笔误」。凡来源未给出的公式、数值、符号定义一律不补写，标 <span class="tbd">[待核对]</span>。</p>'+
+    '<p><strong>主干来源</strong>：濮良贵《机械设计》（第9版）教材知识点整理 domm.muzing.top（ch02~ch15 共 13 章，公式依据 GB/T 3480-1997、GB/T 13575.1 等国家标准）。</p>'+
+    '<p><strong>外部核对来源（10 份）</strong>：</p><ol>'+
+    '<li>Mechtool 齿轮承载能力计算工具（GB/T 3480-1997）</li>'+
+    '<li>Mechtool V 带传动计算工具（GB/T 13575.1）</li>'+
+    '<li>ME311 机械设计第三章齿轮传动习题课 PDF（南方科技大学）</li>'+
+    '<li>speedreducer.org《机械设计基础》网络课程 Chapter 11（螺栓/键）</li>'+
+    '<li>speedreducer.org《机械设计基础》网络课程 Chapter 07（轴）</li>'+
+    '<li>中文维基百科「带 (机械)」rev 95077185</li>'+
+    '<li>中文维基百科「轴承」rev 93685128</li>'+
+    '<li>中文维基百科「蝸桿傳動」rev 82127380</li>'+
+    '<li>中文维基百科「滚子链」rev 96238216</li>'+
+    '<li>GB/T 1243（滚子链）等标准条款（经上述来源转引）</li>'+
+    '</ol>'+
+    '<p style="margin-top:8px">维基百科仅「带传动」2 式可供核对；滚动轴承 <code class="cd">ε=3</code> 由其算例 <code class="cd">10⁶×(1000/500)³=8×10⁶</code> 反推旁证；滚子链与蜗杆页面无公式可核对。</p>'+
+    '</footer>';
+
+  const content=document.getElementById('content');
+  content.innerHTML=html;
+  document.getElementById('toc').innerHTML=toc;
+  mathify(content);
+  content.querySelectorAll('article.card').forEach(function(el,i){el.id=el.closest('.sec').id+'-c'+i;});
+  bindCalcs(content);
+  buildChips();
+  applyFilter();
+}
+
+/* ---------------- 筛选 / 搜索 ---------------- */
+let state={q:'',part:'all',diffOnly:false};
+function buildChips(){
+  const box=document.getElementById('chips');
+  let h='<button class="chip" data-part="all" aria-pressed="true">全部</button>';
+  DATA.parts.forEach(function(p,i){
+    let lab=p.title.replace(/^#\s*/,'');
+    lab=lab.replace(/^[一二三四五六七八九十]+、/,'');
+    if(lab.length>10)lab=lab.slice(0,10)+'…';
+    h+='<button class="chip" data-part="p'+i+'" aria-pressed="false">'+esc(lab)+'</button>';
+  });
+  box.innerHTML=h;
+  box.querySelectorAll('.chip').forEach(function(b){
+    b.addEventListener('click',function(){
+      state.part=b.dataset.part;
+      box.querySelectorAll('.chip').forEach(function(x){x.setAttribute('aria-pressed',String(x===b));});
+      applyFilter();
+    });
+  });
+}
+/* 检索归一化：忽略下标线、括号、反斜杠、$ 等排版符号，让 σ_b / σb / [σ] / σ 都能命中 */
+function normQ(s){
+  return String(s==null?'':s).toLowerCase().replace(/[\s_\[\](){}^\\$,.;:!?'"]/g,'');
+}
+function applyFilter(){
+  const q=normQ(state.q);
+  const parts=document.querySelectorAll('#content .part');
+  let shown=0;
+  parts.forEach(function(ps,pi){
+    const okPart=state.part==='all'||state.part==='p'+pi;
+    let vis=0;
+    ps.querySelectorAll('article.card').forEach(function(c){
+      let ok=okPart;
+      if(ok&&q){
+        ok=normQ(c.dataset.search||'').indexOf(q)>=0||normQ(c.querySelector('.fname')?c.querySelector('.fname').textContent:'').indexOf(q)>=0;
+      }
+      if(ok&&state.diffOnly){ok=c.dataset.flag.indexOf('1')>=0;}
+      c.classList.toggle('hide',!ok);
+      if(ok)vis++;
+    });
+    ps.querySelectorAll('.sec').forEach(function(s){
+      const any=s.querySelector('article.card:not(.hide)');
+      s.classList.toggle('hide',!any);
+      s.style.display=any?'':'none';
+    });
+    ps.classList.toggle('hide',vis===0);
+    ps.style.display=vis===0?'none':'';
+    shown+=vis;
+  });
+  document.getElementById('toc').querySelectorAll('a.lv3').forEach(function(a){
+    const id=a.getAttribute('href').slice(1);
+    const el=document.getElementById(id);
+    if(!el)return;
+    const vis=!el.classList.contains('hide');
+    a.style.display=vis?'':'none';
+    if(q&&vis)a.classList.add('hl');else a.classList.remove('hl');
+  });
+  document.getElementById('toc').querySelectorAll('a.lv1,a.lv2').forEach(function(a){
+    const id=a.getAttribute('href').slice(1);
+    const el=document.getElementById(id);
+    if(!el)return;
+    a.style.display=el.style.display==='none'?'none':'';
+  });
+  let e=document.getElementById('noRes');
+  if(shown===0){
+    if(!e){e=document.createElement('div');e.id='noRes';e.className='empty';e.textContent='没有匹配的公式，请换个关键词。';document.getElementById('content').appendChild(e);}
+  }else if(e){e.remove();}
+}
+
+/* ---------------- 交互 ---------------- */
+document.getElementById('q').addEventListener('input',function(e){state.q=e.target.value;applyFilter();});
+document.getElementById('diffBtn').addEventListener('click',function(){
+  state.diffOnly=!state.diffOnly;
+  this.setAttribute('aria-pressed',String(state.diffOnly));
+  this.textContent=state.diffOnly?'显示全部':'仅看差异/存疑';
+  applyFilter();
+});
+document.getElementById('printBtn').addEventListener('click',function(){window.print();});
+document.getElementById('themeBtn').addEventListener('click',function(){
+  const cur=document.documentElement.getAttribute('data-theme');
+  const next=cur==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  try{localStorage.setItem('mech-theme',next);}catch(e){}
+});
+(function(){
+  let t=null;try{t=localStorage.getItem('mech-theme');}catch(e){}
+  if(!t)t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+  document.documentElement.setAttribute('data-theme',t);
+})();
+document.getElementById('menuBtn').addEventListener('click',function(){
+  document.getElementById('toc').classList.toggle('open');
+});
+document.getElementById('toc').addEventListener('click',function(e){
+  if(e.target.tagName==='A'&&window.innerWidth<=900)this.classList.remove('open');
+});
+document.getElementById('openAllBtn').addEventListener('click',function(){
+  const hidden=document.querySelectorAll('#content article.card.hide').length;
+  if(hidden){state.q='';state.part='all';state.diffOnly=false;document.getElementById('q').value='';applyFilter();
+    document.querySelectorAll('#chips .chip').forEach(function(x){x.setAttribute('aria-pressed',String(x.dataset.part==='all'));});
+    this.textContent='收起差异项';}
+  else{state.diffOnly=true;this.textContent='显示全部';applyFilter();}
+});
+/* 目录高亮 */
+window.addEventListener('scroll',function(){
+  const secs=document.querySelectorAll('#content .sec');
+  let cur=null;
+  secs.forEach(function(s){if(s.getBoundingClientRect().top<120)cur=s;});
+  document.querySelectorAll('#toc a.cur').forEach(function(a){a.classList.remove('cur');});
+  if(cur){
+    const a=document.querySelector('#toc a[href="#'+cur.id+'"]');
+    if(a)a.classList.add('cur');
+  }
+},{passive:true});
+
+render();
+</script>
+</body>
+</html>

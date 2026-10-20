@@ -1,0 +1,8 @@
+# 构建中间产物
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+
+# 公式抓取/调试的中间产物（非交付内容）
+mech-formula-sources/_tmp/
